@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateUploaderDto } from './dto/create-uploader.dto';
 import { UpdateUploaderDto } from './dto/update-uploader.dto';
 //Below modules are needed for file processing
@@ -6,19 +6,14 @@ import * as fs from 'fs';
 import stream = require('stream');
 import fastify = require('fastify')
 import * as util from 'util';
-import { ApiResponse } from '@nestjs/swagger';
-import { AppResponseDto } from './dto/app-response.dto';
+
 
 @Injectable()
 export class UploaderService {
-    async uploadFile(req: fastify.FastifyRequest, res: fastify.FastifyReply<any>): Promise<any> {
+    async uploadFile(req: fastify.FastifyRequest): Promise<any> {
         //Check request is multipart
         if (!req.isMultipart()) {
-            res.send(new BadRequestException(
-                new AppResponseDto(400, undefined, 'Request is not multipart'),
-
-            ))
-            return
+            return new BadRequestException('Request not multi-part')
         }
         const mp = await req.multipart(this.handler, onEnd);
         // for key value pairs in request
@@ -28,16 +23,18 @@ export class UploaderService {
         // Uploading finished
         async function onEnd(err: any) {
             if (err) {
-                res.send(new HttpException('Internal server error', 500))
-                return 'error'
+                return new InternalServerErrorException()
             }
-            res.code(200).send(new AppResponseDto(200, undefined, 'Data uploaded successfully'))
-
+            return true
         }
     }
     //Save files in directory
     async handler(field: string, file: any, filename: string, encoding: string, mimetype: string): Promise<void> {
         const pipeline = util.promisify(stream.pipeline);
+        console.log("mimetype: ", mimetype)
+        console.log("------------field", field)
+        console.log("encoding:", encoding)
+        console.log("file:", file)
         const writeStream = fs.createWriteStream(`uploads/${filename}`); //File path
         try {
             await pipeline(file, writeStream);

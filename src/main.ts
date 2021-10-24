@@ -18,12 +18,14 @@ async function bootstrap() {
         .setTitle('File uploader')
         .setDescription('')
         .setVersion('1.0')
+
         // .addTag('Uploader')
         .build();
+
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document);
 
 
-    await app.listen(3000);
+    await app.listen(3000, '192.168.29.248');
 }
 bootstrap();
