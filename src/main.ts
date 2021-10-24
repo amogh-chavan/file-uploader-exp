@@ -5,13 +5,15 @@ import {
 } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import fastifyMultipart from 'fastify-multipart';
 async function bootstrap() {
     const app = await NestFactory.create<NestFastifyApplication>(
         AppModule,
         new FastifyAdapter({ logger: true })
     );
 
-
+    app.register(fastifyMultipart);
+    app.enableCors();
     const config = new DocumentBuilder()
         .setTitle('File uploader')
         .setDescription('')
@@ -20,6 +22,7 @@ async function bootstrap() {
         .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document);
+
 
     await app.listen(3000);
 }

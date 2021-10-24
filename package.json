@@ -27,6 +27,7 @@
         "@nestjs/platform-express": "^8.0.0",
         "@nestjs/platform-fastify": "^8.1.1",
         "@nestjs/swagger": "^5.1.4",
+        "fastify-multipart": "^5.0.2",
         "fastify-swagger": "^4.12.5",
         "reflect-metadata": "^0.1.13",
         "rimraf": "^3.0.2",
